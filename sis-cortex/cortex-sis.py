@@ -8,10 +8,6 @@ def clean_and_wrap(the_value):
     ret_val = the_value.replace("'", "\\'")
     return "\'" + ret_val + "\'"
 
-
-st.session_state['query'] = ''
-
-
 # Write directly to the app
 st.title("Snowflake Cortex")
 
@@ -21,7 +17,7 @@ session = get_active_session()
 # default query
 query = ""
 
-tab_translate, tab_summarize, tab_sentiment, tab_complete = st.tabs(["Translate", "Summarize", "Sentiment", "Complete"])
+tab_translate, tab_summarize, tab_sentiment, tab_complete, tab_answer = st.tabs(["Translate", "Summarize", "Sentiment", "Complete", "Extract Answer"])
 
 ################################################################
 #### Translate
@@ -48,14 +44,15 @@ with tab_translate:
     
     query = "select snowflake.ml.translate(" + clean_and_wrap(text_to_translate) + "," \
         + clean_and_wrap(from_language) + ", " \
-        + clean_and_wrap(to_language) + ") as result"
+        + clean_and_wrap(to_language) + ")"
+
+    # Display the resulting query
+    st.text_area("Resulting Query", query)
 
     if text_to_translate:
-        st.session_state['query'] = query
-
-    
+       
         # Do the translation!
-        translation = session.sql(query).select(col("result")).collect()    
+        translation = session.sql(query).collect()    
         st.text_area("Translation", str(translation[0][0]))
 
 
@@ -67,13 +64,15 @@ with tab_summarize:
 
     text_to_summarize = st.text_area("Text to Summarize")
     
-    query = "select snowflake.ml.summarize(" + clean_and_wrap(text_to_summarize) + ") as result"
+    query = "select snowflake.ml.summarize(" + clean_and_wrap(text_to_summarize) + ")"
+
+    # Display the resulting query
+    st.text_area("Resulting Query", query)
 
     if text_to_summarize:
-        st.session_state['query'] = query
-
+        
         # Do the translation!
-        summary = session.sql(query).select(col("result")).collect()    
+        summary = session.sql(query).collect()    
         st.text_area("Summary", str(summary[0][0]))
 
 
@@ -85,13 +84,16 @@ with tab_sentiment:
 
     text_for_analysis = st.text_area("Text to Determine Sentiment")
     
-    query = "select snowflake.ml.sentiment(" + clean_and_wrap(text_for_analysis) + ") as result"
+    query = "select snowflake.ml.sentiment(" + clean_and_wrap(text_for_analysis) + ")"
+
+    # Display the resulting query
+    st.text_area("Resulting Query", query)
 
     if text_for_analysis:
         st.session_state['query'] = query
 
         # Do the sentiment!
-        summary = session.sql(query).select(col("result")).collect()    
+        summary = session.sql(query).collect()    
         st.text_input("Sentiment Score", str(summary[0][0]))
 
 ################################################################
@@ -100,22 +102,43 @@ with tab_sentiment:
 with tab_complete:
     st.header("Cortex-powered LLM Completion")
 
-    llm = st.selectbox("LLM", ['llama2-7b-chat'])
+    llm = st.selectbox("LLM", ['llama2-7b-chat', 'llama2-70b-chat'])
     text_for_analysis = st.text_area("Prompt/Question")
     
     query = "select snowflake.ml.complete(" + clean_and_wrap(llm) + "," \
-        + clean_and_wrap(text_for_analysis) + ") as result"
+        + clean_and_wrap(text_for_analysis) + ")"
+
+    # Display the resulting query
+    st.text_area("Resulting Query", query)
 
     if text_for_analysis:
-        st.session_state['query'] = query
 
         # Do the sentiment!
-        summary = session.sql(query).select(col("result")).collect()    
+        summary = session.sql(query).collect()    
         st.text_area("Generation Result", str(summary[0][0]))
 
 
-# Display the resulting query
-st.text_area("Resulting Query", st.session_state['query'])
+################################################################
+#### Extract Answer
+################################################################
+with tab_answer:
+    st.header("Cortex-powered LLM Answer Extraction")
+
+    question = st.text_input("Question")
+    text_for_analysis = st.text_area("Content to Analyze")
+    
+    query = "select snowflake.ml.extract_answer(" \
+        + clean_and_wrap(text_for_analysis) + "," \
+        + clean_and_wrap(question) + ")"
+
+    # Display the resulting query
+    st.text_area("Resulting Query", query)
+
+    if text_for_analysis and question:
+
+        # Do the sentiment!
+        summary = session.sql(query).collect()    
+        st.text_area("Result", str(summary[0][0]))
 
 
 
