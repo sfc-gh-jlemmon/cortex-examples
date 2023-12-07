@@ -46,14 +46,17 @@ with tab_translate:
         + clean_and_wrap(from_language) + ", " \
         + clean_and_wrap(to_language) + ")"
 
-    # Display the resulting query
-    st.text_area("Resulting Query", query)
-
+    
     if text_to_translate:
-       
+
+        # Display the resulting query
+        with st.expander("Cortex Query", expanded=True):
+            st.code(query, "sql")
+    
         # Do the translation!
         translation = session.sql(query).collect()    
-        st.text_area("Translation", str(translation[0][0]))
+        with st.expander("Translation", expanded=True):
+            st.write(str(translation[0][0]))
 
 
 ################################################################
@@ -66,14 +69,17 @@ with tab_summarize:
     
     query = "select snowflake.ml.summarize(" + clean_and_wrap(text_to_summarize) + ")"
 
-    # Display the resulting query
-    st.text_area("Resulting Query", query)
 
     if text_to_summarize:
-        
+
+        # Display the resulting query
+        with st.expander("Cortex Query", expanded=True):
+            st.code(query, "sql")
+
         # Do the translation!
         summary = session.sql(query).collect()    
-        st.text_area("Summary", str(summary[0][0]))
+        with st.expander("Summary", expanded=True):
+            st.write(str(summary[0][0]))
 
 
 ################################################################
@@ -86,15 +92,16 @@ with tab_sentiment:
     
     query = "select snowflake.ml.sentiment(" + clean_and_wrap(text_for_analysis) + ")"
 
-    # Display the resulting query
-    st.text_area("Resulting Query", query)
-
     if text_for_analysis:
-        st.session_state['query'] = query
+        # Display the resulting query
+        with st.expander("Cortex Query", expanded=True):
+            st.code(query, "sql")
+
 
         # Do the sentiment!
         summary = session.sql(query).collect()    
-        st.text_input("Sentiment Score", str(summary[0][0]))
+        with st.expander("Sentiment Score", expanded=True):
+            st.metric("Sentiment Score", "", delta=summary[0][0], label_visibility="hidden")
 
 ################################################################
 #### Completion
@@ -108,14 +115,19 @@ with tab_complete:
     query = "select snowflake.ml.complete(" + clean_and_wrap(llm) + "," \
         + clean_and_wrap(text_for_analysis) + ")"
 
-    # Display the resulting query
-    st.text_area("Resulting Query", query)
-
     if text_for_analysis:
+
+        # Display the resulting query
+        with st.expander("Cortex Query", expanded=True):
+            st.code(query, "sql")
 
         # Do the sentiment!
         summary = session.sql(query).collect()    
-        st.text_area("Generation Result", str(summary[0][0]))
+        with st.expander("Generation Result", expanded=True):
+            st.write(str(summary[0][0]))
+
+        with st.expander("Sample Prompt", expanded=False):
+            st.write("For an alternatives investor interested in optimizing their portfolio, but also considering ESG concerns of their clients, what should be evaluated in company filings?")
 
 
 ################################################################
@@ -125,20 +137,22 @@ with tab_answer:
     st.header("Cortex-powered LLM Answer Extraction")
 
     question = st.text_input("Question")
-    text_for_analysis = st.text_area("Content to Analyze")
+    text_for_analysis = st.text_area("Content to Analyze", height=250)
     
     query = "select snowflake.ml.extract_answer(" \
         + clean_and_wrap(text_for_analysis) + "," \
         + clean_and_wrap(question) + ")"
 
-    # Display the resulting query
-    st.text_area("Resulting Query", query)
-
     if text_for_analysis and question:
+
+        # Display the resulting query
+        with st.expander("Cortex Query", expanded=True):
+            st.code(query, "sql")
 
         # Do the sentiment!
         summary = session.sql(query).collect()    
-        st.text_area("Result", str(summary[0][0]))
+        with st.expander("Cortex Answer", expanded=True):
+            st.write(str(summary[0][0]))
 
 
 
