@@ -20,7 +20,7 @@ query = ""
 tab_translate, tab_summarize, tab_sentiment, tab_complete, tab_answer = st.tabs(["Translate", "Summarize", "Sentiment", "Complete", "Extract Answer"])
 
 ################################################################
-#### Translate
+#### Translate 
 ################################################################
 with tab_translate:
     st.header("Cortex-powered Translation 🗼")

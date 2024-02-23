@@ -1,0 +1,15 @@
+name: snowpark-rag
+channels:
+  - https://repo.anaconda.com/pkgs/snowflake
+dependencies:
+  - python=3.9
+  - snowflake-snowpark-python
+  - pandas
+  - xgboost
+  - notebook
+  - scikit-learn
+  - cachetools
+  - seaborn
+  - matplotlib
+  - PyPDF2
+  - langchain
