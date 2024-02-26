@@ -42,7 +42,7 @@ with tab_translate:
     
     text_to_translate = st.text_input("Text to Translate")
     
-    query = "select snowflake.ml.translate(" + clean_and_wrap(text_to_translate) + "," \
+    query = "select snowflake.cortex.translate(" + clean_and_wrap(text_to_translate) + "," \
         + clean_and_wrap(from_language) + ", " \
         + clean_and_wrap(to_language) + ")"
 
@@ -67,7 +67,7 @@ with tab_summarize:
 
     text_to_summarize = st.text_area("Text to Summarize")
     
-    query = "select snowflake.ml.summarize(" + clean_and_wrap(text_to_summarize) + ")"
+    query = "select snowflake.cortex.summarize(" + clean_and_wrap(text_to_summarize) + ")"
 
 
     if text_to_summarize:
@@ -90,7 +90,7 @@ with tab_sentiment:
 
     text_for_analysis = st.text_area("Text to Determine Sentiment")
     
-    query = "select snowflake.ml.sentiment(" + clean_and_wrap(text_for_analysis) + ")"
+    query = "select snowflake.cortex.sentiment(" + clean_and_wrap(text_for_analysis) + ")"
 
     if text_for_analysis:
         # Display the resulting query
@@ -109,10 +109,10 @@ with tab_sentiment:
 with tab_complete:
     st.header("Cortex-powered LLM Completion")
 
-    llm = st.selectbox("LLM", ['llama2-7b-chat', 'llama2-70b-chat'])
+    llm = st.selectbox("LLM", ['mistral-7b', 'llama2-70b-chat'])
     text_for_analysis = st.text_area("Prompt/Question")
     
-    query = "select snowflake.ml.complete(" + clean_and_wrap(llm) + "," \
+    query = "select snowflake.cortex.complete(" + clean_and_wrap(llm) + "," \
         + clean_and_wrap(text_for_analysis) + ")"
 
     if text_for_analysis:
@@ -139,7 +139,7 @@ with tab_answer:
     question = st.text_input("Question")
     text_for_analysis = st.text_area("Content to Analyze", height=250)
     
-    query = "select snowflake.ml.extract_answer(" \
+    query = "select snowflake.cortex.extract_answer(" \
         + clean_and_wrap(text_for_analysis) + "," \
         + clean_and_wrap(question) + ")"
 
